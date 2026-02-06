@@ -16,15 +16,17 @@ export default function Tickets() {
 
   const loadTickets = async () => {
     if (!projectId) return;
+      console.log("Tickets page projectId:", projectId);
+
 
     const res = await axios.get(
-      `http://localhost:5000/api/tickets/${projectId}`,
+      `${import.meta.env.VITE_API_URL}/api/tickets/${projectId}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         params: filters,
-      },
+      }
     );
 
     setTickets(res.data);
@@ -34,15 +36,21 @@ export default function Tickets() {
     loadTickets();
   }, [projectId, filters]);
 
+    if (!projectId) {
+    return (
+      <div className="p-6 text-red-600 font-semibold">
+         Project not loaded yet
+      </div>
+    );
+  }
+
   return (
     <div className="p-6">
-      {/* Create Ticket */}
       <TicketForm projectId={projectId} refresh={loadTickets} />
 
-      {/* Filters */}
+
       <TicketFilters setFilters={setFilters} />
 
-      {/* Kanban Board */}
       <KanbanBoard
         tickets={tickets}
         setTickets={setTickets}
@@ -55,7 +63,7 @@ export default function Tickets() {
       {tickets.map((t) => (
         <div
           key={t._id}
-          className="border p-4 mb-3 rounded flex justify-between"
+          className="border p-4 mb-3 rounded flex justify-between items-center"
         >
           <div>
             <h3 className="font-semibold">{t.title}</h3>
@@ -69,16 +77,37 @@ export default function Tickets() {
             </p>
           </div>
 
-          <button
-            onClick={() => setEditingTicket(t)}
-            className="text-blue-600 text-sm"
-          >
-            Edit
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setEditingTicket(t)}
+              className="text-blue-600 text-sm"
+            >
+              Edit
+            </button>
+
+            <button
+              onClick={async () => {
+                if (!window.confirm("Delete this ticket?")) return;
+
+                await axios.delete(
+                  `http://localhost:5000/api/tickets/${t._id}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                  }
+                );
+
+                loadTickets();
+              }}
+              className="text-red-600 text-sm"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       ))}
 
-      {/* Edit Ticket Modal */}
       {editingTicket && (
         <EditTicketModal
           ticket={editingTicket}
@@ -86,24 +115,6 @@ export default function Tickets() {
           refresh={loadTickets}
         />
       )}
-
-      <button
-        onClick={async () => {
-          if (!window.confirm("Delete this ticket?")) return;
-
-          await axios.delete(`http://localhost:5000/api/tickets/${t._id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
-
-          loadTickets();
-        }}
-        className="text-red-600 text-sm"
-      >
-        Delete
-      </button>
-      
     </div>
   );
 }

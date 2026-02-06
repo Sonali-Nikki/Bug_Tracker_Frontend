@@ -15,7 +15,6 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Auth Routes */}
-        <Route path="/login" element={<Navigate to="/login" />} />
         <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
 
@@ -33,7 +32,7 @@ export default function App() {
 
         {/* Tickets (per project) */}
         <Route
-          path="/projects"
+          path="/projects/:projectId/tickets"
           element={
             <ProtectedRoute>
               <DashboardLayout>

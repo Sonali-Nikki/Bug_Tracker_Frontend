@@ -7,7 +7,7 @@ export default function Comments({ ticketId }) {
 
   const loadComments = () => {
     axios
-      .get(`http://localhost:5000/api/comments/${ticketId}`, {
+      .get(`${import.meta.env.VITE_API_URL}/api/comments/${ticketId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

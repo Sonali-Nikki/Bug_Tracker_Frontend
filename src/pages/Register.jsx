@@ -7,26 +7,28 @@ export default function Register() {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
   });
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-const submit = async () => {
-  if (!form.name || !form.email || !form.password) {
-    alert("All fields are required");
-    return;
-  }
-  try {
-    await axios.post("http://localhost:5000/api/auth/register", form);
-    alert("Registered Successfully");
-    navigate("/login");
-  } catch (err) {
-    alert(err.response?.data?.message || "Registration failed");
-  }
-};
-
+  const submit = async () => {
+    if (!form.name || !form.email || !form.password) {
+      alert("All fields are required");
+      return;
+    }
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/register`,
+        form,
+      );
+      alert("Registered Successfully");
+      navigate("/login");
+    } catch (err) {
+      alert(err.response?.data?.message || "Registration failed");
+    }
+  };
 
   return (
     <div className="h-screen flex items-center justify-center">

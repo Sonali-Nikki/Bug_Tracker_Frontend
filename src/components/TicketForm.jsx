@@ -2,36 +2,63 @@ import { useState } from "react";
 import axios from "axios";
 
 export default function TicketForm({ projectId, refresh }) {
-  const [form, setForm] = useState({
-    title: "",
-    priority: "Medium",
-    projectId,
-  });
+  const [title, setTitle] = useState("");
+  const [priority, setPriority] = useState("Medium");
 
-  const submit = async () => {
-    await axios.post("http://localhost:5000/api/tickets", form, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    refresh();
+  console.log("TicketForm projectId:", projectId);
+
+
+const submit = async () => {
+  if (!projectId || projectId === "undefined") {
+    alert("Project not loaded yet");
+    return;
+  }
+
+  if (!form.title.trim()) {
+    alert("Title is required");
+    return;
+  }
+
+  const payload = {
+    title: form.title,
+    priority: form.priority,
+    projectId,
   };
+
+  console.log("SENDING PAYLOAD:", payload);
+
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/tickets`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    setForm({ title: "", priority: "Medium" });
+    refresh();
+  } catch (err) {
+    console.error("CREATE TICKET ERROR:", err.response?.data);
+  }
+};
+
 
   return (
     <div className="border p-4 mb-4 rounded">
       <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
         placeholder="Ticket title"
         className="border p-2 w-full mb-2"
-        onChange={(e) =>
-          setForm({ ...form, title: e.target.value })
-        }
       />
 
       <select
+        value={priority}
+        onChange={(e) => setPriority(e.target.value)}
         className="border p-2 w-full mb-2"
-        onChange={(e) =>
-          setForm({ ...form, priority: e.target.value })
-        }
       >
         <option>Low</option>
         <option>Medium</option>

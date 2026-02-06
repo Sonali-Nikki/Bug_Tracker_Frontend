@@ -8,7 +8,7 @@ export default function Projects() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/projects", {
+      .get(`${import.meta.env.VITE_API_URL}/api/projects`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -26,6 +26,13 @@ export default function Projects() {
           <p className="text-sm text-gray-600">{p.description}</p>
         </div>
       ))}
+
+      <button
+        onClick={() => navigate(`/projects/${projects._id}/tickets`)}
+        className="text-blue-600"
+      >
+        View Bugs
+      </button>
     </div>
   );
 }

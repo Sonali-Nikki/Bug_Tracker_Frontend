@@ -8,13 +8,13 @@ export default function EditTicketModal({ ticket, onClose, refresh }) {
 
   const updateTicket = async () => {
     await axios.put(
-      `http://localhost:5000/api/tickets/${ticket._id}`,
+      `${import.meta.env.VITE_API_URL}/api/tickets/${ticket._id}`,
       { title, priority, status },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      }
+      },
     );
 
     refresh();
@@ -54,7 +54,10 @@ export default function EditTicketModal({ ticket, onClose, refresh }) {
 
         <div className="flex justify-end gap-3">
           <button onClick={onClose}>Cancel</button>
-          <button onClick={updateTicket} className="bg-blue-600 text-white px-4 py-1 rounded">
+          <button
+            onClick={updateTicket}
+            className="bg-blue-600 text-white px-4 py-1 rounded"
+          >
             Save
           </button>
         </div>
